@@ -488,37 +488,30 @@
             <div class="key-metrics" id="key-metrics"></div>
         </div>
 
-        <!-- ROW 2: Three stat columns -->
+        <!-- === U.S. TRADE WITH COUNTRY === -->
+
+        <!-- ROW 2: Bilateral stats + FDI Position (stats + chart) -->
         <div class="row">
-            <div class="col-3">
+            <div class="col-2">
                 <div class="panel">
                     <div class="sec-header" id="sec-bilateral"></div>
                     <div class="stat-lines" id="bilateral-stats"></div>
                 </div>
             </div>
-            <div class="col-3">
+            <div class="col-2">
                 <div class="panel">
-                    <div class="sec-header" id="sec-world"></div>
-                    <div class="stat-lines" id="world-stats"></div>
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="panel">
-                    <div class="sec-header">U.S. FDI &amp; Exporter Detail</div>
-                    <div class="sub-header">FDI Position, 2024 ($M)</div>
+                    <div class="sec-header">FDI Position, 2020&ndash;2024 ($M)</div>
                     <div class="stat-lines" id="fdi-stats"></div>
-                    <div class="sub-header" id="exporter-sub-header"></div>
-                    <div class="exporter-row">
-                        <div class="stat-lines" id="exporter-stats"></div>
-                        <div class="donut-side">
-                            <canvas id="donut-chart"></canvas>
+                    <div class="chart-wrap">
+                        <div class="chart-container-xs">
+                            <canvas id="fdi-chart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ROW 3: Two charts -->
+        <!-- ROW 3: U.S. Goods Trade + Balance charts -->
         <div class="row">
             <div class="col-2">
                 <div class="panel">
@@ -558,30 +551,15 @@
             </div>
         </div>
 
-        <!-- ROW 5: Macro Indicators + World Trade Time Series (side by side tables) -->
+        <!-- ROW 5: Exporters + Jobs Chart -->
         <div class="row">
             <div class="col-2">
                 <div class="panel">
-                    <div class="sec-header">Macroeconomic Indicators, 2021&ndash;2025</div>
-                    <div id="macro-table-wrap"></div>
-                </div>
-            </div>
-            <div class="col-2">
-                <div class="panel">
-                    <div class="sec-header" id="sec-world-ts"></div>
-                    <div id="world-ts-table"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ROW 6: FDI Chart + Jobs Chart (compact) -->
-        <div class="row">
-            <div class="col-2">
-                <div class="panel">
-                    <div class="sec-header">FDI Position, 2020&ndash;2024 ($M)</div>
-                    <div class="chart-wrap">
-                        <div class="chart-container-xs">
-                            <canvas id="fdi-chart"></canvas>
+                    <div class="sec-header" id="exporter-sub-header"></div>
+                    <div class="exporter-row">
+                        <div class="stat-lines" id="exporter-stats"></div>
+                        <div class="donut-side">
+                            <canvas id="donut-chart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -594,6 +572,44 @@
                             <canvas id="jobs-chart"></canvas>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- === COUNTRY TRADE WITH WORLD === -->
+
+        <!-- ROW 6: World Stats + World Goods Trade Chart -->
+        <div class="row">
+            <div class="col-2">
+                <div class="panel">
+                    <div class="sec-header" id="sec-world"></div>
+                    <div class="stat-lines" id="world-stats"></div>
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="panel">
+                    <div class="sec-header" id="sec-world-goods-chart"></div>
+                    <div class="chart-wrap">
+                        <div class="chart-container-sm">
+                            <canvas id="world-goods-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 7: Macro Indicators + World Trade Time Series -->
+        <div class="row">
+            <div class="col-2">
+                <div class="panel">
+                    <div class="sec-header">Macroeconomic Indicators, 2021&ndash;2025</div>
+                    <div id="macro-table-wrap"></div>
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="panel">
+                    <div class="sec-header" id="sec-world-ts"></div>
+                    <div id="world-ts-table"></div>
                 </div>
             </div>
         </div>
@@ -886,8 +902,8 @@ function renderWorldStats(d) {
     const ex = w.exports[4], im = w.imports[4], bal = w.balance[4];
     document.getElementById('sec-world').textContent = d.name + ' Goods Trade with World, 2024';
     document.getElementById('world-stats').innerHTML = `
-        <div class="stat-line"><span class="stat-line__label">Goods Exports to World</span><span class="stat-line__value">${fmtM(ex)} M</span></div>
-        <div class="stat-line"><span class="stat-line__label">Goods Imports from World</span><span class="stat-line__value">${fmtM(im)} M</span></div>
+        <div class="stat-line"><span class="stat-line__label">Goods Exports to World</span><span class="stat-line__value blue">${fmtM(ex)} M</span></div>
+        <div class="stat-line"><span class="stat-line__label">Goods Imports from World</span><span class="stat-line__value red">${fmtM(im)} M</span></div>
         <div class="stat-line"><span class="stat-line__label">Trade Balance</span><span class="stat-line__value ${balColor(bal)}">${fmtMSigned(bal)} M</span></div>
         <div class="stat-line"><span class="stat-line__label">Rank among World Exporters</span><span class="stat-line__value">${wr.exRank}</span></div>
         <div class="stat-line"><span class="stat-line__label">Rank among World Importers</span><span class="stat-line__value">${wr.imRank}</span></div>
@@ -1075,10 +1091,11 @@ function renderWorldTimeSeries(d) {
     var dark = isDark();
     var greenColor = dark ? '#66bb6a' : '#2e7d32';
     var redColor = dark ? '#ef5350' : '#c62828';
+    var blueColor = dark ? '#4d9de0' : '#005ea2';
     const metrics = [
-        { label: 'Exports', data: w.exports },
-        { label: 'Imports', data: w.imports },
-        { label: 'Trade Balance', data: w.balance, color: true },
+        { label: 'Exports', data: w.exports, rowColor: blueColor },
+        { label: 'Imports', data: w.imports, rowColor: dark ? '#ef5350' : '#d83933' },
+        { label: 'Trade Balance', data: w.balance, balanceColor: true },
         { label: 'Total Trade', data: w.total }
     ];
     let html = `<table class="dense-table"><thead><tr><th>Metric</th>${years.map(y => `<th class="r">${y}</th>`).join('')}</tr></thead><tbody>`;
@@ -1086,13 +1103,53 @@ function renderWorldTimeSeries(d) {
         html += '<tr><td>' + m.label + '</td>';
         m.data.forEach(v => {
             let style = '';
-            if (m.color) style = v >= 0 ? ' style="color:' + greenColor + '"' : ' style="color:' + redColor + '"';
+            if (m.rowColor) style = ' style="color:' + m.rowColor + '"';
+            if (m.balanceColor) style = v >= 0 ? ' style="color:' + greenColor + '"' : ' style="color:' + redColor + '"';
             html += `<td class="mono"${style}>${fmt(v)}</td>`;
         });
         html += '</tr>';
     });
     html += '</tbody></table>';
     document.getElementById('world-ts-table').innerHTML = html;
+}
+
+// World Goods Trade Chart (matches U.S. Goods Trade chart style)
+function renderWorldTradeChart(d) {
+    var gridColor = getGridColor();
+    var chartTextColor = getChartTextColor();
+    var dark = isDark();
+    const years = ['2020','2021','2022','2023','2024'];
+
+    var exportBarColor = dark ? '#4d9de0' : '#005ea2';
+    var importBarColor = dark ? '#ef5350' : '#d83933';
+
+    document.getElementById('sec-world-goods-chart').textContent =
+        d.name + ' Goods Trade with World, 2020\u20132024 ($M)';
+
+    if (charts.worldGoods) charts.worldGoods.destroy();
+    charts.worldGoods = new Chart(document.getElementById('world-goods-chart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: years,
+            datasets: [
+                { label: 'Exports', data: d.worldTrade.exports, backgroundColor: exportBarColor, barPercentage: 0.7, categoryPercentage: 0.7 },
+                { label: 'Imports', data: d.worldTrade.imports, backgroundColor: importBarColor, barPercentage: 0.7, categoryPercentage: 0.7 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            layout: { padding: { top: 5, right: 10, bottom: 0, left: 0 } },
+            plugins: {
+                legend: { position:'top', align:'end', labels:{ font:{size:10}, padding:8, boxWidth:8, boxHeight:8, color: chartTextColor } },
+                tooltip: { callbacks: { label: function(ctx) { return ctx.dataset.label + ': $' + ctx.parsed.y.toLocaleString() + 'M'; } } },
+                datalabels: { display: false }
+            },
+            scales: {
+                y: { beginAtZero:true, ticks:{ font:CHART_FONT, color: chartTextColor, callback: function(v){return '$'+(v/1000).toFixed(0)+'B';} }, grid:{color:gridColor}, border:{color:gridColor} },
+                x: { ticks:{font:CHART_FONT, color: chartTextColor}, grid:{display:false}, border:{color:gridColor} }
+            }
+        }
+    });
 }
 
 // Row 6: FDI & Jobs Charts
@@ -1181,6 +1238,7 @@ function populateAll(d) {
     renderTopProducts(d);
     renderMacroTable(d);
     renderWorldTimeSeries(d);
+    renderWorldTradeChart(d);
     renderHistoricalCharts(d);
 }
 
