@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Country Reports | International Trade Administration</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <style>
+        :root {
+            --primary: #005ea2;
+            --primary-dark: #1a4480;
+            --primary-darker: #162e51;
+            --base-lightest: #f0f0f0;
+            --base-lighter: #dfe1e2;
+            --base-light: #a9aeb1;
+            --base: #71767a;
+            --base-dark: #565c65;
+            --ink: #1b1b1b;
+            --red: #d83933;
+            --green: #2e7d32;
+            --red-dark: #c62828;
+            --white: #ffffff;
+            --orange: #fa9441;
+            --stripe: #f8f9fa;
+            --mono: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
+            --sans: 'Source Sans 3', 'Source Sans Pro', 'Helvetica Neue', sans-serif;
+        }
+
+        /* Dark mode CSS variable overrides */
+        [data-theme="dark"] {
+            --ink: #e8e8e8;
+            --white: #1a1a2e;
+            --stripe: #1f1f3a;
+            --base-lightest: #16162a;
+            --base-lighter: #2a2a4a;
+            --base-light: #8888aa;
+            --base-dark: #ccccdd;
+            --primary: #4d9de0;
+            --primary-dark: #1a3355;
+            --primary-darker: #0f1f33;
+            --red: #ef5350;
+            --green: #66bb6a;
+            --red-dark: #ef5350;
+            --orange: #ffb74d;
+        }
+
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: var(--sans);
+            background: var(--white);
+            color: var(--ink);
+            line-height: 1.3;
+            -webkit-font-smoothing: antialiased;
+            font-size: 13px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* Gov Banner */
+        .usa-banner {
+            background: var(--base-lightest);
+            border-bottom: 1px solid var(--base-lighter);
+            padding: 0 20px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            font-size: 11px;
+            color: var(--ink);
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+        }
+        .usa-banner__inner { display:flex; align-items:center; gap:6px; }
+
+        /* Dept + Agency Headers */
+        .dept-header {
+            background: var(--primary-darker);
+            padding: 4px 20px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            transition: background 0.3s;
+        }
+        .dept-header__text {
+            font-size: 11px;
+            color: var(--white);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .agency-header {
+            background: var(--primary-dark);
+            padding: 0 20px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.3s;
+        }
+        .agency-header__title { font-size: 16px; font-weight: 700; color: var(--white); }
+        .agency-header__right { font-size: 11px; color: rgba(255,255,255,0.9); }
+
+        /* Selector Bar */
+        .selector-bar {
+            background: var(--base-lightest);
+            border-bottom: 1px solid var(--base-lighter);
+            padding: 0 20px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .selector-bar__label {
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--ink);
+            letter-spacing: 0.8px;
+        }
+        .selector-bar select {
+            padding: 4px 28px 4px 8px;
+            font-size: 13px;
+            font-family: var(--sans);
+            border: 1px solid var(--base-lighter);
+            border-radius: 2px;
+            background: var(--white);
+            color: var(--ink);
+            appearance: none;
+            cursor: pointer;
+            height: 32px;
+            min-width: 180px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23565c65'%3E%3Cpath d='M6 8.5L1.5 4h9z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+        }
+        .tab-btns { display:flex; gap:0; margin-left:8px; }
+        .tab-btn {
+            padding: 6px 16px;
+            font-size: 12px;
+            font-family: var(--sans);
+            font-weight: 600;
+            border: 1px solid var(--base-lighter);
+            background: var(--white);
+            color: var(--ink);
+            cursor: pointer;
+            border-radius: 0;
+            margin-left: -1px;
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+        }
+        .tab-btn:first-child { border-radius: 2px 0 0 2px; margin-left:0; }
+        .tab-btn:last-child { border-radius: 0 2px 2px 0; }
+        .tab-btn.active {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+            z-index: 1;
+            position: relative;
+        }
+        .tab-btn:hover:not(.active) { background: #e8e8e8; }
+
+        /* Dark mode toggle */
+        .theme-toggle {
+            width: 28px;
+            height: 28px;
+            border-radius: 2px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: auto;
+            background: transparent;
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s, color 0.3s;
+        }
+        .theme-toggle:hover { background: var(--base-lighter); }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 12px 20px 20px;
+            transition: opacity 0.2s;
+        }
+        .main-content.fade-out { opacity: 0.3; }
+
+        /* Country Header Bar */
+        .country-header-bar {
+            background: var(--stripe);
+            border: 1px solid var(--base-lighter);
+            border-radius: 2px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            gap: 16px;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .country-id { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+        .country-id__flag { font-size: 36px; line-height: 1; }
+        .country-id__name { font-size: 22px; font-weight: 700; color: var(--ink); }
+        .country-id__sub { font-size: 12px; color: var(--ink); }
+        .key-metrics { display: flex; gap: 0; flex-shrink: 0; }
+        .key-metric {
+            padding: 2px 18px;
+            text-align: center;
+            border-left: 1px solid var(--base-lighter);
+            min-width: 100px;
+            transition: border-color 0.3s;
+        }
+        .key-metric:first-child { border-left: none; }
+        .key-metric__label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--ink);
+            font-weight: 600;
+            margin-bottom: 1px;
+        }
+        .key-metric__value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--ink);
+            font-family: var(--mono);
+            font-feature-settings: "tnum";
+        }
+        .val-green { color: var(--green) !important; }
+        .val-red { color: var(--red-dark) !important; }
+
+        /* Section Headers */
+        .sec-header {
+            background: var(--primary-dark);
+            color: var(--white);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 10px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            border-radius: 2px 2px 0 0;
+            flex-shrink: 0;
+            transition: background 0.3s;
+        }
+        .sub-header {
+            background: #e4e8ed;
+            color: var(--ink);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 4px 10px;
+            border-bottom: 1px solid var(--base-lighter);
+            flex-shrink: 0;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        /* Panels */
+        .panel {
+            border: 1px solid var(--base-lighter);
+            border-radius: 2px;
+            background: var(--white);
+            overflow: hidden;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        /* Grid */
+        .row { display:flex; gap:10px; margin-bottom:10px; align-items:stretch; }
+        .col-3 { flex:1; min-width:0; display:flex; flex-direction:column; }
+        .col-3 > .panel { flex:1; display:flex; flex-direction:column; }
+        .col-2 { flex:1; min-width:0; display:flex; flex-direction:column; }
+        .col-2 > .panel { flex:1; display:flex; flex-direction:column; }
+        .col-1 { flex:1; min-width:0; }
+
+        /* Stat Lines */
+        .stat-lines { padding: 6px 10px; flex: 1; }
+        .stat-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 4px 0;
+            border-bottom: 1px solid #ebebeb;
+            font-size: 13px;
+            gap: 8px;
+            transition: border-color 0.3s;
+        }
+        .stat-line:last-child { border-bottom: none; }
+        .stat-line__label { color: var(--ink); font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
+        .stat-line__value {
+            font-family: var(--mono);
+            font-feature-settings: "tnum";
+            font-weight: 700;
+            color: var(--ink);
+            font-size: 13px;
+            text-align: right;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .stat-line__value.blue { color: var(--primary); }
+        .stat-line__value.red { color: var(--red); }
+        .stat-line__value.green { color: var(--green); }
+
+        /* Dense Tables */
+        .dense-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        .dense-table thead th {
+            background: var(--primary-dark);
+            color: var(--white);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 5px 8px;
+            text-align: left;
+            border: none;
+            white-space: nowrap;
+            transition: background 0.3s;
+        }
+        .dense-table thead th.r { text-align:right; }
+        .dense-table tbody td {
+            padding: 5px 8px;
+            border-bottom: 1px solid #eaeaea;
+            color: var(--ink);
+            vertical-align: middle;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            transition: border-color 0.3s;
+        }
+        .dense-table tbody tr:nth-child(even) { background: var(--stripe); transition: background 0.3s; }
+        .dense-table tbody tr:nth-child(odd) { background: var(--white); transition: background 0.3s; }
+        .dense-table .mono {
+            font-family: var(--mono);
+            font-feature-settings: "tnum";
+            text-align: right;
+            font-size: 12px;
+        }
+        .dense-table .rank { text-align:center; color:var(--ink); font-weight:600; width:28px; }
+        .dense-table .naics { color:var(--base-dark); font-family:var(--mono); font-size:11px; width:44px; }
+        .dense-table .bar-cell { width:120px; padding-right:10px; }
+        .inline-bar {
+            height: 14px;
+            display: block;
+            border-radius: 1px;
+            min-width: 2px;
+        }
+        .inline-bar.blue { background: var(--primary); }
+        .inline-bar.red { background: var(--red); }
+        /* 2025 highlight column */
+        .dense-table .hl {
+            background: #dce8f5 !important;
+            font-weight: 700;
+        }
+        .dense-table thead th.hl {
+            background: #0d3668 !important;
+        }
+
+        /* Charts */
+        .chart-wrap { padding: 8px 10px; flex: 1; display: flex; flex-direction: column; }
+        .chart-container-sm { position:relative; height:220px; flex: 1; min-height: 180px; }
+        .chart-container-xs { position:relative; height:140px; }
+
+        /* Exporter Row (side by side stats + donut) */
+        .exporter-row { display:flex; align-items:center; }
+        .exporter-row .stat-lines { flex:1; padding: 6px 10px; }
+        .donut-side { width:100px; height:100px; flex-shrink:0; padding:6px; }
+
+        /* Footer */
+        .site-footer {
+            background: var(--ink);
+            padding: 20px;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        .footer-text {
+            font-size: 11px;
+            color: #d0d2d3;
+            line-height: 1.6;
+            max-width: 1440px;
+            margin: 0 auto;
+            transition: color 0.3s;
+        }
+        .footer-text p { margin-bottom: 6px; }
+        .footer-text p:last-child { margin-bottom: 0; }
+
+        /* ====== Dark mode element-specific overrides ====== */
+        [data-theme="dark"] .usa-banner { background: #16162a; }
+        [data-theme="dark"] .dept-header { background: #0f1f33; }
+        [data-theme="dark"] .agency-header { background: #1a3355; }
+        [data-theme="dark"] .selector-bar { background: #16162a; border-color: #2a2a4a; }
+        [data-theme="dark"] .selector-bar select { background: #1a1a2e; border-color: #2a2a4a; color: #e8e8e8; }
+        [data-theme="dark"] .tab-btn { background: #1a1a2e; color: #e8e8e8; border-color: #2a2a4a; }
+        [data-theme="dark"] .tab-btn.active { background: #4d9de0; color: #fff; }
+        [data-theme="dark"] .tab-btn:hover:not(.active) { background: #2a2a4a; }
+        [data-theme="dark"] .country-header-bar { background: #1f1f3a; border-color: #2a2a4a; }
+        [data-theme="dark"] .key-metric { border-color: #2a2a4a; }
+        [data-theme="dark"] .panel { background: #1a1a2e; border-color: #2a2a4a; }
+        [data-theme="dark"] .sec-header { background: #1a3355; }
+        [data-theme="dark"] .sub-header { background: #1f1f3a; border-color: #2a2a4a; }
+        [data-theme="dark"] .stat-line { border-color: #2a2a4a; }
+        [data-theme="dark"] .dense-table thead th { background: #1a3355; }
+        [data-theme="dark"] .dense-table thead th.hl { background: #0f2d55 !important; }
+        [data-theme="dark"] .dense-table tbody td { border-color: #2a2a4a; }
+        [data-theme="dark"] .dense-table tbody tr:nth-child(even) { background: #1f1f3a; }
+        [data-theme="dark"] .dense-table tbody tr:nth-child(odd) { background: #1a1a2e; }
+        [data-theme="dark"] .dense-table .hl { background: #1a2d4a !important; }
+        [data-theme="dark"] .inline-bar.blue { background: #4d9de0; }
+        [data-theme="dark"] .inline-bar.red { background: #ef5350; }
+        [data-theme="dark"] .site-footer { background: #0a0a1a; }
+        [data-theme="dark"] .footer-text { color: #8888aa; }
+        [data-theme="dark"] .dept-header__text { color: #e8e8e8; }
+        [data-theme="dark"] .agency-header__title { color: #e8e8e8; }
+
+        /* Print */
+        @media print {
+            .usa-banner, .selector-bar { display:none; }
+            .site-footer { background:#fff; }
+            .site-footer .footer-text { color:#333; }
+            body { background:#fff; font-size:11px; }
+            .main-content { padding:0; }
+        }
+
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .row { flex-direction: column; }
+            .country-header-bar { flex-direction: column; align-items: flex-start; }
+            .key-metrics { flex-wrap: wrap; }
+        }
+        @media (max-width: 700px) {
+            .tab-btns { display:none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Government Banner -->
+    <div class="usa-banner">
+        <div class="usa-banner__inner">
+            <span aria-hidden="true">&#127482;&#127480;</span>
+            <span>An official website of the United States government</span>
+        </div>
+    </div>
+
+    <!-- Department Header -->
+    <div class="dept-header">
+        <span class="dept-header__text">U.S. Department of Commerce</span>
+    </div>
+    <div class="agency-header">
+        <span class="agency-header__title">International Trade Administration | Country Reports</span>
+        <span class="agency-header__right">Data updated: February 2026</span>
+    </div>
+
+    <!-- Country Selector -->
+    <div class="selector-bar">
+        <span class="selector-bar__label">Trading Partner</span>
+        <select id="country-select">
+            <option value="canada">Canada</option>
+            <option value="china">China</option>
+            <option value="mexico">Mexico</option>
+        </select>
+        <div class="tab-btns">
+            <button class="tab-btn active" data-country="canada">&#127464;&#127462; Canada</button>
+            <button class="tab-btn" data-country="china">&#127464;&#127475; China</button>
+            <button class="tab-btn" data-country="mexico">&#127474;&#127485; Mexico</button>
+        </div>
+        <button class="theme-toggle" id="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">&#9788;</button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+
+        <!-- ROW 1: Country Header + Key Metrics -->
+        <div class="country-header-bar">
+            <div class="country-id">
+                <span class="country-id__flag" id="hdr-flag"></span>
+                <div>
+                    <div class="country-id__name" id="hdr-name"></div>
+                </div>
+            </div>
+            <div class="key-metrics" id="key-metrics"></div>
+        </div>
+
+        <!-- ROW 2: Three stat columns -->
+        <div class="row">
+            <div class="col-3">
+                <div class="panel">
+                    <div class="sec-header" id="sec-bilateral"></div>
+                    <div class="stat-lines" id="bilateral-stats"></div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="panel">
+                    <div class="sec-header" id="sec-world"></div>
+                    <div class="stat-lines" id="world-stats"></div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="panel">
+                    <div class="sec-header">U.S. FDI &amp; Exporter Detail</div>
+                    <div class="sub-header">FDI Position, 2024 ($M)</div>
+                    <div class="stat-lines" id="fdi-stats"></div>
+                    <div class="sub-header" id="exporter-sub-header"></div>
+                    <div class="exporter-row">
+                        <div class="stat-lines" id="exporter-stats"></div>
+                        <div class="donut-side">
+                            <canvas id="donut-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 3: Two charts -->
+        <div class="row">
+            <div class="col-2">
+                <div class="panel">
+                    <div class="sec-header" id="sec-goods-chart"></div>
+                    <div class="chart-wrap">
+                        <div class="chart-container-sm">
+                            <canvas id="goods-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="panel">
+                    <div class="sec-header" id="sec-balance-chart"></div>
+                    <div class="chart-wrap">
+                        <div class="chart-container-sm">
+                            <canvas id="balance-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 4: Top Products Tables -->
+        <div class="row">
+            <div class="col-2">
+                <div class="panel">
+                    <div class="sec-header" id="sec-top-ex"></div>
+                    <div id="top-exports-table"></div>
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="panel">
+                    <div class="sec-header" id="sec-top-im"></div>
+                    <div id="top-imports-table"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 5: Macro Indicators + World Trade Time Series (side by side tables) -->
+        <div class="row">
+            <div class="col-2">
+                <div class="panel">
+                    <div class="sec-header">Macroeconomic Indicators, 2021&ndash;2025</div>
+                    <div id="macro-table-wrap"></div>
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="panel">
+                    <div class="sec-header" id="sec-world-ts"></div>
+                    <div id="world-ts-table"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 6: FDI Chart + Jobs Chart (compact) -->
+        <div class="row">
+            <div class="col-2">
+                <div class="panel">
+                    <div class="sec-header">FDI Position, 2020&ndash;2024 ($M)</div>
+                    <div class="chart-wrap">
+                        <div class="chart-container-xs">
+                            <canvas id="fdi-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="panel">
+                    <div class="sec-header">Jobs Supported by U.S. Exports, 2019&ndash;2023</div>
+                    <div class="chart-wrap">
+                        <div class="chart-container-xs">
+                            <canvas id="jobs-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-text">
+            <p><strong>Sources:</strong> U.S. Census Bureau | Bureau of Economic Analysis | UN Comtrade | IMF World Economic Outlook | ITA Exporter Database</p>
+            <p>Prepared by the Office of Trade &amp; Economic Analysis, Industry &amp; Analysis, International Trade Administration, U.S. Department of Commerce</p>
+            <p>Last updated: February 2026</p>
+        </div>
+    </footer>
+
+<script>
+const DATA = {
+  canada: {
+    name: "Canada", flag: "\u{1F1E8}\u{1F1E6}",
+    macro: {
+      gdp: [2022.382, 2190.411, 2173.34, 2241.253, 2225.341],
+      gdpPerCapita: [52912, 56358, 54376, 54473, 53558],
+      gdpGrowth: [5.951, 4.189, 1.529, 1.528, 1.376],
+      inflation: [3.395, 6.779, 3.885, 2.398, 1.982],
+      unemployment: [7.483, 5.25, 5.383, 6.375, 6.597],
+      population: [38.221, 38.866, 39.969, 41.144, 41.55]
+    },
+    macro2025: { gdp: 2225, gdpPerCapita: 53558, growth: 1.4, population: 41.6, inflation: 2.0, unemployment: 6.6 },
+    usGoods: {
+      exports: [309604, 359084, 354408, 349908, 329801],
+      imports: [357275, 437418, 418010, 411887, 382960],
+      balance: [-47671, -78333, -63602, -61979, -53159],
+      total:   [666879, 796502, 772418, 761795, 712761]
+    },
+    usTrade2025: {
+      exports: 329801, imports: 382960, balance: -53159,
+      exRank: 2, imRank: 2, totalRank: 2,
+      exShare: 15.1, imShare: 11.2,
+      jobsSupported: 1053
+    },
+    worldTrade: {
+      exports: [388173, 501623, 599942, 567345, 549622],
+      imports: [405205, 491692, 571773, 558529, 540565],
+      balance: [-17032, 9931, 28168, 8815, 9058],
+      total:   [793378, 993315, 1171715, 1125874, 1090187]
+    },
+    worldRank: { exRank: 11, imRank: 13, exShare: 2.5, imShare: 2.4 },
+    topExports: [
+      ["336", "Transportation Equipment", 63541],
+      ["325", "Chemicals", 36747],
+      ["333", "Machinery, Except Electrical", 35249],
+      ["334", "Computer & Electronic Products", 25350],
+      ["311", "Processed Foods", 18938]
+    ],
+    topImports: [
+      ["211", "Oil & Gas", 96059],
+      ["336", "Transportation Equipment", 63821],
+      ["331", "Primary Metal Manufactures", 29610],
+      ["311", "Processed Foods", 28455],
+      ["325", "Chemicals", 25191]
+    ],
+    fdi: {
+      outward: [366880, 398107, 415388, 426255, 459597],
+      inward:  [569718, 628492, 660766, 745330, 811709]
+    },
+    exporters: { total: 94283, sme: 88879, nonSme: 5404, smeShare: 94.3 },
+    jobs: [1087516, 926210, 977116, 1075602, 1053445]
+  },
+  china: {
+    name: "China", flag: "\u{1F1E8}\u{1F1F3}",
+    macro: {
+      gdp: [18190.803, 18307.816, 18270.351, 18748.009, 19231.705],
+      gdpPerCapita: [12878, 12968, 12961, 13313, 13687],
+      gdpGrowth: [8.556, 3.112, 5.377, 5.003, 3.954],
+      inflation: [0.918, 1.976, 0.228, 0.212, -0.026],
+      unemployment: [5.117, 5.583, 5.217, 5.117, 5.1],
+      population: [1412.6, 1411.75, 1409.67, 1408.28, 1405.08]
+    },
+    macro2025: { gdp: 19232, gdpPerCapita: 13687, growth: 4.0, population: 1405.1, inflation: 0.0, unemployment: 5.1 },
+    usGoods: {
+      exports: [151439, 153987, 147635, 143227, 106308],
+      imports: [504246, 536269, 427247, 438742, 308380],
+      balance: [-352807, -382281, -279611, -295515, -202071],
+      total:   [655686, 690256, 574882, 581969, 414688]
+    },
+    usTrade2025: {
+      exports: 106308, imports: 308380, balance: -202071,
+      exRank: 3, imRank: 3, totalRank: 3,
+      exShare: 4.9, imShare: 9.0,
+      jobsSupported: 465
+    },
+    worldTrade: {
+      exports: [2589098, 3316022, 3593601, 3379748, 3576543],
+      imports: [2069568, 2679412, 2715998, 2556763, 2585135],
+      balance: [519530, 636610, 877604, 822985, 991409],
+      total:   [4658666, 5995434, 6309599, 5936511, 6161678]
+    },
+    worldRank: { exRank: 1, imRank: 2, exShare: 16.1, imShare: 11.3 },
+    topExports: [
+      ["325", "Chemicals", 21822],
+      ["334", "Computer & Electronic Products", 20077],
+      ["336", "Transportation Equipment", 19359],
+      ["333", "Machinery, Except Electrical", 8595],
+      ["339", "Miscellaneous Manufactures", 4559]
+    ],
+    topImports: [
+      ["334", "Computer & Electronic Products", 64475],
+      ["335", "Electrical Equip., Appliances & Comp.", 41968],
+      ["339", "Miscellaneous Manufactures", 33006],
+      ["333", "Machinery, Except Electrical", 27862],
+      ["332", "Fabricated Metal Products", 19284]
+    ],
+    fdi: {
+      outward: [116508, 116003, 116314, 118894, 122888],
+      inward:  [52700, 47139, 43435, 43102, 39983]
+    },
+    exporters: { total: 29276, sme: 26496, nonSme: 2780, smeShare: 90.5 },
+    jobs: [451930, 511955, 543379, 511409, 464903]
+  },
+  mexico: {
+    name: "Mexico", flag: "\u{1F1F2}\u{1F1FD}",
+    macro: {
+      gdp: [1316.569, 1466.465, 1793.799, 1852.723, 1692.64],
+      gdpPerCapita: [10207, 11284, 13679, 14007, 12692],
+      gdpGrowth: [6.048, 3.711, 3.295, 1.454, -0.26],
+      inflation: [5.693, 7.897, 5.526, 4.723, 3.538],
+      unemployment: [4.141, 3.274, 2.797, 2.668, 3.845],
+      population: [128.983, 129.961, 131.135, 132.274, 133.367]
+    },
+    macro2025: { gdp: 1693, gdpPerCapita: 12692, growth: -0.3, population: 133.4, inflation: 3.5, unemployment: 3.8 },
+    usGoods: {
+      exports: [277195, 327016, 323637, 334032, 337960],
+      imports: [382569, 452015, 472907, 505523, 534874],
+      balance: [-105375, -124999, -149270, -171491, -196913],
+      total:   [659764, 779031, 796545, 839555, 872834]
+    },
+    usTrade2025: {
+      exports: 337960, imports: 534874, balance: -196913,
+      exRank: 1, imRank: 1, totalRank: 1,
+      exShare: 15.5, imShare: 15.7,
+      jobsSupported: 899
+    },
+    worldTrade: {
+      exports: [416982, 494461, 577731, 595973, 619655],
+      imports: [382980, 505716, 604615, 605583, 636780],
+      balance: [34002, -11255, -26884, -9610, -17125],
+      total:   [799962, 1000176, 1182346, 1201556, 1256436]
+    },
+    worldRank: { exRank: 10, imRank: 9, exShare: 2.8, imShare: 2.8 },
+    topExports: [
+      ["334", "Computer & Electronic Products", 72345],
+      ["336", "Transportation Equipment", 42259],
+      ["325", "Chemicals", 29041],
+      ["324", "Petroleum & Coal Products", 28489],
+      ["333", "Machinery, Except Electrical", 23120]
+    ],
+    topImports: [
+      ["336", "Transportation Equipment", 158891],
+      ["334", "Computer & Electronic Products", 142418],
+      ["335", "Electrical Equip., Appliances & Comp.", 47912],
+      ["333", "Machinery, Except Electrical", 33566],
+      ["111", "Agricultural Products", 17758]
+    ],
+    fdi: {
+      outward: [110753, 119947, 128263, 142259, 159220],
+      inward:  [42068, 48186, 54627, 58592, 61676]
+    },
+    exporters: { total: 54750, sme: 50823, nonSme: 3927, smeShare: 92.8 },
+    jobs: [863398, 705055, 815936, 902212, 899491]
+  }
+};
+
+// Helpers
+function fmt(n) { return n.toLocaleString('en-US'); }
+function fmtM(n) { return '$' + Math.abs(n).toLocaleString('en-US'); }
+function fmtMSigned(n) { return (n < 0 ? '-' : '') + '$' + Math.abs(n).toLocaleString('en-US'); }
+function fmtPct(n) { return n.toFixed(1) + '%'; }
+function fmtDec(n, d) { return n.toFixed(d !== undefined ? d : 1); }
+function fmtGdp(n) { return '$' + n.toLocaleString('en-US', {maximumFractionDigits:0}) + 'B'; }
+function fmtGdpPc(n) { return '$' + n.toLocaleString('en-US', {maximumFractionDigits:0}); }
+function fmtPop(n) { return n.toFixed(1) + 'M'; }
+function valColor(v) { return v > 0 ? 'val-green' : v < 0 ? 'val-red' : ''; }
+function balColor(v) { return v >= 0 ? 'green' : 'red'; }
+
+// State
+let currentCountry = 'canada';
+let charts = {};
+const mainContent = document.getElementById('main-content');
+const select = document.getElementById('country-select');
+const tabs = document.querySelectorAll('.tab-btn');
+
+// Theme helpers
+function isDark() {
+    return document.documentElement.dataset.theme === 'dark';
+}
+
+function getChartTextColor() {
+    return isDark() ? '#e8e8e8' : '#1b1b1b';
+}
+
+function getGridColor() {
+    return isDark() ? '#2a2a4a' : '#e8e8e8';
+}
+
+function applyChartDefaults() {
+    Chart.defaults.font.family = "'Source Sans 3', sans-serif";
+    Chart.defaults.font.size = 11;
+    Chart.defaults.color = getChartTextColor();
+    Chart.defaults.plugins.datalabels = { display: false };
+}
+
+const CHART_FONT = { family: "'JetBrains Mono', monospace", size: 10 };
+
+function destroyCharts() {
+    Object.values(charts).forEach(c => { if(c) c.destroy(); });
+    charts = {};
+}
+
+// Dark mode toggle
+const themeToggle = document.getElementById('theme-toggle');
+
+function setTheme(dark) {
+    if (dark) {
+        document.documentElement.dataset.theme = 'dark';
+        themeToggle.innerHTML = '&#9790;'; // moon
+        localStorage.setItem('theme', 'dark');
+    } else {
+        delete document.documentElement.dataset.theme;
+        themeToggle.innerHTML = '&#9788;'; // sun
+        localStorage.setItem('theme', 'light');
+    }
+    applyChartDefaults();
+}
+
+// Initialize theme from localStorage
+(function() {
+    var saved = localStorage.getItem('theme');
+    if (saved === 'dark') {
+        setTheme(true);
+    } else {
+        setTheme(false);
+    }
+})();
+
+themeToggle.addEventListener('click', function() {
+    setTheme(!isDark());
+    // Re-render charts with new colors
+    destroyCharts();
+    populateAll(DATA[currentCountry]);
+});
+
+// Row 1: Header
+function renderHeader(d) {
+    document.getElementById('hdr-flag').textContent = d.flag;
+    document.getElementById('hdr-name').textContent = d.name;
+    const m = d.macro2025;
+    document.getElementById('key-metrics').innerHTML = [
+        { label:'GDP', value: fmtGdp(m.gdp) },
+        { label:'GDP/Capita', value: fmtGdpPc(m.gdpPerCapita) },
+        { label:'Growth', value: fmtPct(m.growth), cls: valColor(m.growth) },
+        { label:'Population', value: fmtPop(m.population) },
+        { label:'Inflation', value: fmtPct(m.inflation) },
+        { label:'Unemployment', value: fmtPct(m.unemployment) }
+    ].map(s => `<div class="key-metric">
+        <div class="key-metric__label">${s.label}</div>
+        <div class="key-metric__value ${s.cls||''}">${s.value}</div>
+    </div>`).join('');
+}
+
+// Row 2 Col 1: Bilateral
+function renderBilateral(d) {
+    const t = d.usTrade2025;
+    document.getElementById('sec-bilateral').textContent = 'U.S. Goods Trade with ' + d.name + ', 2025';
+    document.getElementById('bilateral-stats').innerHTML = `
+        <div class="stat-line"><span class="stat-line__label">U.S. Exports to ${d.name}</span><span class="stat-line__value blue">${fmtM(t.exports)} M</span></div>
+        <div class="stat-line"><span class="stat-line__label">U.S. Imports from ${d.name}</span><span class="stat-line__value red">${fmtM(t.imports)} M</span></div>
+        <div class="stat-line"><span class="stat-line__label">Trade Balance (EX-IM)</span><span class="stat-line__value ${balColor(t.balance)}">${fmtMSigned(t.balance)} M</span></div>
+        <div class="stat-line"><span class="stat-line__label">Partner Rank in U.S. Exports</span><span class="stat-line__value">${t.exRank}</span></div>
+        <div class="stat-line"><span class="stat-line__label">Partner Rank in U.S. Imports</span><span class="stat-line__value">${t.imRank}</span></div>
+        <div class="stat-line"><span class="stat-line__label">Ranking in U.S. Two-Way Trade</span><span class="stat-line__value">${t.totalRank}</span></div>
+        <div class="stat-line"><span class="stat-line__label">Partner's Share of U.S. Exports</span><span class="stat-line__value">${fmtPct(t.exShare)}</span></div>
+        <div class="stat-line"><span class="stat-line__label">Partner's Share of U.S. Imports</span><span class="stat-line__value">${fmtPct(t.imShare)}</span></div>
+        <div class="stat-line"><span class="stat-line__label">Jobs Supported by Exports (2023)</span><span class="stat-line__value">${fmt(t.jobsSupported)} Thousand</span></div>
+    `;
+}
+
+// Row 2 Col 2: World Stats
+function renderWorldStats(d) {
+    const w = d.worldTrade, wr = d.worldRank;
+    const ex = w.exports[4], im = w.imports[4], bal = w.balance[4];
+    document.getElementById('sec-world').textContent = d.name + ' Goods Trade with World, 2024';
+    document.getElementById('world-stats').innerHTML = `
+        <div class="stat-line"><span class="stat-line__label">Goods Exports to World</span><span class="stat-line__value">${fmtM(ex)} M</span></div>
+        <div class="stat-line"><span class="stat-line__label">Goods Imports from World</span><span class="stat-line__value">${fmtM(im)} M</span></div>
+        <div class="stat-line"><span class="stat-line__label">Trade Balance</span><span class="stat-line__value ${balColor(bal)}">${fmtMSigned(bal)} M</span></div>
+        <div class="stat-line"><span class="stat-line__label">Rank among World Exporters</span><span class="stat-line__value">${wr.exRank}</span></div>
+        <div class="stat-line"><span class="stat-line__label">Rank among World Importers</span><span class="stat-line__value">${wr.imRank}</span></div>
+        <div class="stat-line"><span class="stat-line__label">Share of World Exports</span><span class="stat-line__value">${fmtPct(wr.exShare)}</span></div>
+        <div class="stat-line"><span class="stat-line__label">Share of World Imports</span><span class="stat-line__value">${fmtPct(wr.imShare)}</span></div>
+    `;
+}
+
+// Row 2 Col 3: FDI & Exporters
+function renderFdiExporters(d) {
+    var dark = isDark();
+    var chartTextColor = getChartTextColor();
+    const fdi = d.fdi;
+    document.getElementById('fdi-stats').innerHTML = `
+        <div class="stat-line"><span class="stat-line__label">FDI Inward (UBO)</span><span class="stat-line__value blue">${fmtM(fdi.inward[4])}</span></div>
+        <div class="stat-line"><span class="stat-line__label">FDI Outward</span><span class="stat-line__value" style="color:var(--orange)">${fmtM(fdi.outward[4])}</span></div>
+    `;
+    document.getElementById('exporter-sub-header').textContent = 'U.S. Exporters to ' + d.name + ', 2023';
+    const e = d.exporters;
+    document.getElementById('exporter-stats').innerHTML = `
+        <div class="stat-line"><span class="stat-line__label">Total Exporters</span><span class="stat-line__value">${fmt(e.total)}</span></div>
+        <div class="stat-line"><span class="stat-line__label">SME Exporters</span><span class="stat-line__value">${fmt(e.sme)}</span></div>
+        <div class="stat-line"><span class="stat-line__label">Non-SME Exporters</span><span class="stat-line__value">${fmt(e.nonSme)}</span></div>
+        <div class="stat-line"><span class="stat-line__label">SME Share</span><span class="stat-line__value">${fmtPct(e.smeShare)}</span></div>
+    `;
+    if (charts.donut) charts.donut.destroy();
+    var donutPrimaryBg = dark ? '#4d9de0' : '#005ea2';
+    var donutSecondaryBg = dark ? '#2a2a4a' : '#dfe1e2';
+    charts.donut = new Chart(document.getElementById('donut-chart').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: ['SME', 'Non-SME'],
+            datasets: [{ data: [e.smeShare, 100 - e.smeShare], backgroundColor: [donutPrimaryBg, donutSecondaryBg], borderWidth: 0 }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true, cutout: '60%',
+            plugins: {
+                legend: { display: false }, tooltip: { enabled: true },
+                datalabels: {
+                    display: true,
+                    color: function(ctx) { return ctx.dataIndex === 0 ? '#fff' : chartTextColor; },
+                    font: { family: "'JetBrains Mono', monospace", size: 11, weight: 'bold' },
+                    formatter: function(val) { return val.toFixed(1) + '%'; }
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
+}
+
+// Row 3: Charts
+function renderTradeCharts(d) {
+    var gridColor = getGridColor();
+    var chartTextColor = getChartTextColor();
+    var dark = isDark();
+    const years = ['2021','2022','2023','2024','2025'];
+
+    var exportBarColor = dark ? '#4d9de0' : '#005ea2';
+    var importBarColor = dark ? '#ef5350' : '#d83933';
+    var balanceLineColor = dark ? '#4d9de0' : '#1a4480';
+    var balanceFillColor = dark ? 'rgba(77,157,224,0.10)' : 'rgba(26,68,128,0.10)';
+    var balancePointBorder = dark ? '#1a1a2e' : '#fff';
+
+    document.getElementById('sec-goods-chart').textContent =
+        'U.S. Goods Trade with ' + d.name + ', 2021\u20132025 ($M)';
+    document.getElementById('sec-balance-chart').textContent =
+        'U.S. Trade Balance with ' + d.name + ', 2021\u20132025 ($M)';
+
+    if (charts.goods) charts.goods.destroy();
+    charts.goods = new Chart(document.getElementById('goods-chart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: years,
+            datasets: [
+                { label: 'Exports', data: d.usGoods.exports, backgroundColor: exportBarColor, barPercentage: 0.7, categoryPercentage: 0.7 },
+                { label: 'Imports', data: d.usGoods.imports, backgroundColor: importBarColor, barPercentage: 0.7, categoryPercentage: 0.7 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            layout: { padding: { top: 5, right: 10, bottom: 0, left: 0 } },
+            plugins: {
+                legend: { position:'top', align:'end', labels:{ font:{size:10}, padding:8, boxWidth:8, boxHeight:8, color: chartTextColor } },
+                tooltip: { callbacks: { label: function(ctx) { return ctx.dataset.label + ': $' + ctx.parsed.y.toLocaleString() + 'M'; } } },
+                datalabels: { display: false }
+            },
+            scales: {
+                y: { beginAtZero:true, ticks:{ font:CHART_FONT, color: chartTextColor, callback: function(v){return '$'+(v/1000).toFixed(0)+'B';} }, grid:{color:gridColor}, border:{color:gridColor} },
+                x: { ticks:{font:CHART_FONT, color: chartTextColor}, grid:{display:false}, border:{color:gridColor} }
+            }
+        }
+    });
+
+    if (charts.balance) charts.balance.destroy();
+    charts.balance = new Chart(document.getElementById('balance-chart').getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: years,
+            datasets: [{
+                label: 'Trade Balance', data: d.usGoods.balance,
+                borderColor: balanceLineColor, backgroundColor: balanceFillColor,
+                fill: true, tension: 0.3, pointRadius: 4,
+                pointBackgroundColor: balanceLineColor, pointBorderColor: balancePointBorder, pointBorderWidth: 2, borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            layout: { padding: { top: 20, right: 10, bottom: 0, left: 0 } },
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: function(ctx) { return 'Balance: ' + fmtMSigned(ctx.parsed.y) + 'M'; } } },
+                datalabels: {
+                    display: true, align: 'top', offset: 6, color: balanceLineColor,
+                    font: { family: "'JetBrains Mono', monospace", size: 9, weight: 'bold' },
+                    formatter: function(val) { return (val<0?'-':'') + '$' + Math.abs(Math.round(val/1000)) + 'B'; }
+                }
+            },
+            scales: {
+                y: { ticks:{ font:CHART_FONT, color: chartTextColor, callback: function(v){return '$'+(v/1000).toFixed(0)+'B';} }, grid:{color:gridColor}, border:{color:gridColor} },
+                x: { ticks:{font:CHART_FONT, color: chartTextColor}, grid:{display:false}, border:{color:gridColor} }
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
+}
+
+// Row 4: Product Tables
+function buildProductTable(items, barClass) {
+    const maxVal = Math.max(...items.map(r => r[2]));
+    let rows = items.map((item, i) => {
+        const pct = (item[2] / maxVal) * 120;
+        return `<tr>
+            <td class="rank">${i+1}</td>
+            <td class="naics">${item[0]}</td>
+            <td>${item[1]}</td>
+            <td class="mono">${fmt(item[2])}</td>
+            <td class="bar-cell"><span class="inline-bar ${barClass}" style="width:${pct}px"></span></td>
+        </tr>`;
+    }).join('');
+    return `<table class="dense-table"><thead><tr><th style="width:28px">#</th><th style="width:44px">NAICS</th><th>Product</th><th class="r" style="width:88px">Value ($M)</th><th style="width:120px"></th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function renderTopProducts(d) {
+    document.getElementById('sec-top-ex').textContent = 'Top 5 U.S. Exports to ' + d.name + ', 2025';
+    document.getElementById('sec-top-im').textContent = 'Top 5 U.S. Imports from ' + d.name + ', 2025';
+    document.getElementById('top-exports-table').innerHTML = buildProductTable(d.topExports, 'blue');
+    document.getElementById('top-imports-table').innerHTML = buildProductTable(d.topImports, 'red');
+}
+
+// Row 5 Left: Macro Table
+function renderMacroTable(d) {
+    const years = ['2021','2022','2023','2024','2025'];
+    const m = d.macro;
+    var dark = isDark();
+    var greenColor = dark ? '#66bb6a' : '#2e7d32';
+    var redColor = dark ? '#ef5350' : '#c62828';
+    const rows = [
+        { label: 'Nominal GDP ($B)', data: m.gdp, fmt: v => fmtDec(v,1) },
+        { label: 'GDP Per Capita ($)', data: m.gdpPerCapita, fmt: v => fmt(Math.round(v)) },
+        { label: 'Real GDP Growth (%)', data: m.gdpGrowth, fmt: v => fmtDec(v,1), color: true },
+        { label: 'Inflation (%)', data: m.inflation, fmt: v => fmtDec(v,1) },
+        { label: 'Unemployment (%)', data: m.unemployment, fmt: v => fmtDec(v,1) },
+        { label: 'Population (M)', data: m.population, fmt: v => fmtDec(v,1) }
+    ];
+    let html = `<table class="dense-table"><thead><tr><th>Indicator</th>${years.map((y,i) => `<th class="r${i===4?' hl':''}">${y}</th>`).join('')}</tr></thead><tbody>`;
+    rows.forEach(r => {
+        html += '<tr><td>' + r.label + '</td>';
+        r.data.forEach((v, i) => {
+            let cls = 'mono' + (i === 4 ? ' hl' : '');
+            let style = '';
+            if (r.color) style = v >= 0 ? ' style="color:' + greenColor + '"' : ' style="color:' + redColor + '"';
+            html += `<td class="${cls}"${style}>${r.fmt(v)}</td>`;
+        });
+        html += '</tr>';
+    });
+    html += '</tbody></table>';
+    document.getElementById('macro-table-wrap').innerHTML = html;
+}
+
+// Row 5 Right: World Trade Time Series Table
+function renderWorldTimeSeries(d) {
+    document.getElementById('sec-world-ts').textContent = d.name + ' Goods Trade with World, 2020\u20132024 ($M)';
+    const years = ['2020','2021','2022','2023','2024'];
+    const w = d.worldTrade;
+    var dark = isDark();
+    var greenColor = dark ? '#66bb6a' : '#2e7d32';
+    var redColor = dark ? '#ef5350' : '#c62828';
+    const metrics = [
+        { label: 'Exports', data: w.exports },
+        { label: 'Imports', data: w.imports },
+        { label: 'Trade Balance', data: w.balance, color: true },
+        { label: 'Total Trade', data: w.total }
+    ];
+    let html = `<table class="dense-table"><thead><tr><th>Metric</th>${years.map(y => `<th class="r">${y}</th>`).join('')}</tr></thead><tbody>`;
+    metrics.forEach(m => {
+        html += '<tr><td>' + m.label + '</td>';
+        m.data.forEach(v => {
+            let style = '';
+            if (m.color) style = v >= 0 ? ' style="color:' + greenColor + '"' : ' style="color:' + redColor + '"';
+            html += `<td class="mono"${style}>${fmt(v)}</td>`;
+        });
+        html += '</tr>';
+    });
+    html += '</tbody></table>';
+    document.getElementById('world-ts-table').innerHTML = html;
+}
+
+// Row 6: FDI & Jobs Charts
+function renderHistoricalCharts(d) {
+    var gridColor = getGridColor();
+    var chartTextColor = getChartTextColor();
+    var dark = isDark();
+    const fdiYears = ['2020','2021','2022','2023','2024'];
+    const jobYears = ['2019','2020','2021','2022','2023'];
+
+    var inwardColor = dark ? '#4d9de0' : '#005ea2';
+    var outwardColor = dark ? '#ffb74d' : '#fa9441';
+    var jobsColor = dark ? '#4d9de0' : '#005ea2';
+
+    if (charts.fdi) charts.fdi.destroy();
+    charts.fdi = new Chart(document.getElementById('fdi-chart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: fdiYears,
+            datasets: [
+                { label:'Inward', data: d.fdi.inward, backgroundColor: inwardColor, barPercentage:0.6, categoryPercentage:0.7 },
+                { label:'Outward', data: d.fdi.outward, backgroundColor: outwardColor, barPercentage:0.6, categoryPercentage:0.7 }
+            ]
+        },
+        options: {
+            responsive:true, maintainAspectRatio:false,
+            plugins: {
+                legend: { position:'top', align:'end', labels:{ font:{size:9}, padding:6, boxWidth:8, boxHeight:8, color: chartTextColor } },
+                tooltip: { callbacks: { label: function(ctx) { return ctx.dataset.label+': $'+ctx.parsed.y.toLocaleString()+'M'; } } },
+                datalabels: { display: false }
+            },
+            scales: {
+                y: { beginAtZero:true, ticks:{ font:CHART_FONT, color: chartTextColor, callback: function(v){return '$'+(v/1000).toFixed(0)+'B';} }, grid:{color:gridColor}, border:{color:gridColor} },
+                x: { ticks:{font:CHART_FONT, color: chartTextColor}, grid:{display:false}, border:{color:gridColor} }
+            }
+        }
+    });
+
+    if (charts.jobs) charts.jobs.destroy();
+    const jobsK = d.jobs.map(j => Math.round(j / 1000));
+    charts.jobs = new Chart(document.getElementById('jobs-chart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: jobYears,
+            datasets: [{ label:'Jobs (Thousands)', data: jobsK, backgroundColor: jobsColor, barPercentage:0.5 }]
+        },
+        options: {
+            responsive:true, maintainAspectRatio:false,
+            plugins: {
+                legend: { display:false },
+                tooltip: { callbacks: { label: function(ctx) { return ctx.parsed.y.toLocaleString() + ' Thousand'; } } },
+                datalabels: { display: false }
+            },
+            scales: {
+                y: { beginAtZero:true, ticks:{ font:CHART_FONT, color: chartTextColor, callback: function(v){return fmt(v);} }, grid:{color:gridColor}, border:{color:gridColor} },
+                x: { ticks:{font:CHART_FONT, color: chartTextColor}, grid:{display:false}, border:{color:gridColor} }
+            }
+        }
+    });
+}
+
+// Main render
+function renderAll(key, animate) {
+    const d = DATA[key];
+    if (!d) return;
+    applyChartDefaults();
+    if (animate) {
+        mainContent.classList.add('fade-out');
+        setTimeout(function() {
+            destroyCharts();
+            populateAll(d);
+            mainContent.classList.remove('fade-out');
+        }, 200);
+    } else {
+        destroyCharts();
+        populateAll(d);
+    }
+}
+
+function populateAll(d) {
+    renderHeader(d);
+    renderBilateral(d);
+    renderWorldStats(d);
+    renderFdiExporters(d);
+    renderTradeCharts(d);
+    renderTopProducts(d);
+    renderMacroTable(d);
+    renderWorldTimeSeries(d);
+    renderHistoricalCharts(d);
+}
+
+// Events
+select.addEventListener('change', function() {
+    currentCountry = this.value;
+    updateTabs(currentCountry);
+    renderAll(currentCountry, true);
+});
+tabs.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        currentCountry = this.dataset.country;
+        select.value = currentCountry;
+        updateTabs(currentCountry);
+        renderAll(currentCountry, true);
+    });
+});
+function updateTabs(active) {
+    tabs.forEach(function(btn) { btn.classList.toggle('active', btn.dataset.country === active); });
+}
+
+// Init
+applyChartDefaults();
+renderAll(currentCountry, false);
+</script>
+
+</body>
+</html>
